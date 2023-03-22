@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginx-satefulset
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-deploy
+  serviceName: "nginx-service"
+  template:
+    metadata:
+      labels:
+        app: nginx-deploy
+    spec:
+      containers:
+      - name: nginx-statefulset
+        image: nginx:latest
+        volumeMounts:
+        - name: nginx-volume
+          mountPath: /data/nginx-volume
+      volumes:
+        - name: nginx-volume
+          persistentVolumeClaim:
+            claimName: nginx-volume
+  volumeClaimTemplates:
+  - metadata:
+      name: nginx-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
